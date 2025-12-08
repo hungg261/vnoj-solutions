@@ -3,7 +3,7 @@
 using namespace std;
 
 int C(int n,int k){
-    // nếu n<0 thì chắc chắn không có cách nào chọn ra k phần tử cả
+    // nu n<0 th chc chn khng c cch no chn ra k phn t c
     if(n<0)return 0;
     
     if(k==0) return 1; // nC0
@@ -30,14 +30,14 @@ int dem_tong_bang_s(int d,int S,int N) {
 pair<int,int> find_sum(int N,int T,int d) {
 	int tong_cong_don=0;
 	for(int sum=3; sum<=N*3; ++sum) {
-	    // giá trị trước khi cộng dồn
+	    // gi tr trc khi cng dn
 		int temp=tong_cong_don;
 		
-		// thực hiện cộng dồn
+		// thc hin cng dn
 		tong_cong_don+=dem_tong_bang_s(d,sum,N);
 		
 		if(T<=tong_cong_don) {
-		    // đã tìm được tổng thỏa mãn, trả lại tổng "S" và vị trí "pos"
+		    //  tm c tng tha mn, tr li tng "S" v v tr "pos"
 			return {sum,T-temp};
 		}
 	}
@@ -48,14 +48,14 @@ void tim_x2(int sum,int pos,int N) {
 	for(int x2=1; x2<=N; ++x2) {
 		int x3=sum-x2;
 
-        // nếu x3 thỏa điều kiện thì ta vừa tìm được một cặp thỏa mãn
+        // nu x3 tha iu kin th ta va tm c mt cp tha mn
 		if(1<=x3&&x3<=N) {
-		    // lúc này còn lại pos-1 cặp cần xét nữa nên ta trừ pos cho 1
+		    // lc ny cn li pos-1 cp cn xt na nn ta tr pos cho 1
 			--pos;
 			
-			// nếu không còn cặp cần xét, nghĩa là cặp (x2,x3) hiện tại là cặp cần tìm
+			// nu khng cn cp cn xt, ngha l cp (x2,x3) hin ti l cp cn tm
 			if(pos==0) {
-			    // in ra kết quả và dừng lại
+			    // in ra kt qu v dng li
 				cout<<x2<<' '<<x3<<'\n';
 				return;
 			}
@@ -66,17 +66,17 @@ void tim_x2(int sum,int pos,int N) {
 void tim_x1(int sum,int pos,int N) {
 	int tong_cong_don=0;
 	for(int x1=1; x1<=N; ++x1) {
-	    // giá trị trước khi cộng dồn
+	    // gi tr trc khi cng dn
 		int temp=tong_cong_don;
 		
-		// thực hiện cộng dồn
+		// thc hin cng dn
 		tong_cong_don+=dem_tong_bang_s(2,sum-x1,N);
 		
 		if(pos<=tong_cong_don) {
-		    // đã tìm được x1 thỏa mãn
+		    //  tm c x1 tha mn
 			cout<<x1<<' ';
 			
-			// bắt đầu thực hiện tìm x2
+			// bt u thc hin tm x2
 			tim_x2(sum-x1,pos-temp,N);
 			return;
 		}
@@ -84,11 +84,11 @@ void tim_x1(int sum,int pos,int N) {
 }
 
 void solve(int N,int T) {
-	// tổng của bộ ba cần tìm và vị trí của bộ ba đó trong các bộ ba có tổng tương tự 
+	// tng ca b ba cn tm v v tr ca b ba  trong cc b ba c tng tng t 
 	int sum,pos;
 	tie(sum,pos)=find_sum(N,T,3);
     
-    // bắt đầu tìm x1
+    // bt u tm x1
 	tim_x1(sum,pos,N);
 }
 
