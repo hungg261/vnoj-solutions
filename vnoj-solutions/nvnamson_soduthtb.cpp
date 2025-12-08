@@ -30,8 +30,8 @@ int powmod(int a, int b, int mod){
 
 int digitcnt;
 int solve(int x, int n, int m){
-    if(n == 1){
-        return x % m;
+    if(n == 0){
+        return 0;
     }
     
     if(n & 1){

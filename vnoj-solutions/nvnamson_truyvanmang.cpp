@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-const int MAX=1e6;
+const int MAX=2e5;
 bool a[2*MAX+5];
 int n,k,p,windows[MAX+5],queries[MAX+5];
 string qlist;

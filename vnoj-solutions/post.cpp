@@ -1,66 +1,87 @@
-//#include<bits/stdc++.h>
-//#define int long long
-//using namespace std;
-//
-//int c[5]={0,5,10,20,50},a[5],n;
-//
-//int ans=0;
-//void Try(int idx,int sum){
-//    if(sum>n){
-//        return;
-//    }
-//    if(idx>4){
-//        if(sum==n){
-//            ++ans;
-//        }
-//        return;
-//    }
-//
-//    for(int i=0;i<=a[idx];++i){
-//        Try(idx+1,sum+c[idx]*i);
-//    }
-//}
-//
-//const int MAX=100;
-//int dp[5][MAX+1];
-//void solve(int target){
-//    dp[1][0]=1;
-//    for(int idx=1;idx<=4;++idx){
-//        for(int sum=0;sum<=n;++sum){
-//            for(int i=0;i<=a[idx];++i){
-//                if(sum+c[idx]*i<=n)dp[idx+1][sum+c[idx]*i]+=dp[idx][sum];
-//            }
-//        }
-//    }
-//
-//    for(int i=1;i<=4;++i){
-//        for(int j=0;j<=n;++j){
-//            cerr<<dp[i][j]<<' ';
-//        }
-//        cerr<<'\n';
-//    }
-//    cout<<dp[4][n]<<'\n';
-//}
-//
-//signed main(){
-//    for(int i=1;i<=4;++i)cin>>a[i];
-//    cin>>n;
-//
-////    Try(1,0);
-////    cout<<ans<<'\n';
-//
-//    solve(n);
-//    return 0;
-//}
-//
-
 #include<bits/stdc++.h>
+#define int long long
 using namespace std;
 
-signed main(){
-    int a,b;
-    cin>>a>>b;
+template<typename _T> int getsize(const _T&vec){
+    return vec.size();
+}
+
+int to_int(string value){
+    int res=0;
+    for(char digit:value){
+        (res*=10)+=digit-'0';
+    }
+    return res;
+}
+
+struct bigint{
+    vector<int>a;
+    const int BASE=1e9;
+    const int WIDTH=9;
     
-    cout<<a+b<<'\n';
+    bigint(){}
+    bigint(int x){
+        while(x>0){
+            a.push_back(x%BASE);
+            x/=BASE;
+        }
+    }
+    
+    void trim(){
+        while(!a.empty()&&a.back()==0){
+            a.pop_back();
+        }
+    }
+    
+    bigint operator+(const bigint&b){
+        bigint res;
+        int n=max(getsize(a),getsize(b.a)),carry=0;
+        for(int i=0;i<n||carry;++i){
+            int cur=(i<getsize(a)?a[i]:0)+(i<getsize(b.a)?b.a[i]:0)+carry;
+            res.a.push_back(cur%BASE);
+            carry=cur/BASE;
+        }
+        
+        return res;
+    }
+    
+    void input(){
+        string num;
+        cin>>num;
+        
+        a.clear();
+        for(int i=getsize(num);i>0;i-=WIDTH){
+            int start=max(0LL,i-WIDTH);
+            a.push_back(to_int(num.substr(start,i-start)));
+        }
+    }
+    
+    void output(){
+        if(a.empty()){
+            cout<<"0";
+            return;
+        }
+        
+        cout<<a.back();
+        for(int i=getsize(a)-2;i>=0;--i){
+            cout<<setw(WIDTH)<<setfill('0')<<a[i];
+        }
+    }
+    
+    void debug(){
+        for(int ele:a){
+            cerr<<ele<<' ';
+        }
+        cerr<<'\n';
+    }
+};
+
+signed main(){
+    ios_base::sync_with_stdio(0);cin.tie(0);
+    bigint A,B;
+    A.input();
+    B.input();
+    
+    (A+B).output();
     return 0;
 }

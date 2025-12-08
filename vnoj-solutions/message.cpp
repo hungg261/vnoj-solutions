@@ -44,23 +44,16 @@ void solve(){
         }
     }
     
-    vector<vector<int>> dag(n + 1);
+    vector<int> indeg(scc_count + 1, 0);
     for(int u = 1; u <= n; ++u){
         for(int v: adj[u]){
             if(scc_id[u] != scc_id[v]){
-                dag[scc_id[v]].push_back(scc_id[u]);
+                ++indeg[scc_id[v]];
             }
         }
     }
     
-    int ans = 0;
-    for(int i = 1; i <= scc_count; ++i){
-        sort(begin(dag[i]), end(dag[i]));
-        dag[i].erase(unique(begin(dag[i]), end(dag[i])), end(dag[i]));\
-        
-        if(dag[i].empty()) ++ans;
-    }
-    
+    int ans = count(begin(indeg) + 1, end(indeg), 0);
     cout << ans << '\n';
 }
 

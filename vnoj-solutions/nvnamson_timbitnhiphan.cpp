@@ -13,7 +13,7 @@ signed main() {
         int n;
         cin>>n;
         
-        cout<<__builtin_popcountll(n)%2<<'\n';
+        cout<<__builtin_parityll(n)<<'\n';
     }
     
     return 0;

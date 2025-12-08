@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#define int long long
+// memory efficient?!
 using namespace std;
 
 const int MAXN=1e6;

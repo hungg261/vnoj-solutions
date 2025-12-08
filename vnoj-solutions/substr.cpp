@@ -1,37 +1,55 @@
 #include<bits/stdc++.h>
+#define hash sussy
+#define int long long
 using namespace std;
 
 const int MAXN=1e6;
-int pi[MAXN*2+1];
+int hash[MAXN+5],powhash[MAXN+5];
+string s,t;
+int n,m;
 
-void solve(string a,string b){
-    string s=b+'#'+a;
-    int length_b=b.size();
-    int n=s.size();
+int getTotalHash(int BASE,int MOD){
+    int hashy=0;
+    for(int i=1;i<=m;++i){
+        hashy=(hashy*BASE+(t[i]-'a'+1))%MOD;
+    }
+    return hashy;
+}
+
+void compute(int BASE,int MOD){
+    powhash[0]=1;
+    for(int i=1;i<=n;++i){
+        powhash[i]=(powhash[i-1]*BASE)%MOD;
+    }
     
-    pi[0]=0;
-    for(int i=1;i<n;++i){
-        int j=pi[i-1];
-        while(j>0&&s[j]!=s[i]){
-            j=pi[j-1];
+    for(int i=1;i<=n;++i){
+        hash[i]=(hash[i-1]*BASE+(s[i]-'a'+1))%MOD;
+    }
+}
+
+int getHash(int i,int j,int MOD){
+    return ((hash[j]-hash[i-1]*powhash[j-i+1])%MOD+MOD)%MOD;
+}
+
+void solve(int BASE,int MOD){
+    compute(BASE,MOD);
+    
+    int key=getTotalHash(BASE,MOD);
+    for(int i=1;i+m-1<=n;++i){
+        if(getHash(i,i+m-1,MOD)==key){
+            cout<<i<<' ';
         }
-        if(s[j]==s[i]){
-            ++j;
-        }
-        
-        if(j==length_b){
-            cout<<i-length_b*2+1<<' ';
-        }
-        pi[i]=j;
     }
     cout<<'\n';
 }
 
 signed main(){
-    ios_base::sync_with_stdio(0);cin.tie(0);
-    string a,b;
-    cin>>a>>b;
+    cin>>s>>t;
     
-    solve(a,b);
-    return 0;
+    n=s.size();
+    m=t.size();
+    s='#'+s;
+    t='#'+t;
+    
+    solve(41,1e9+9);
 }

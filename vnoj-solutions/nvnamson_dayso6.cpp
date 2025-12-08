@@ -1,79 +1,93 @@
 #include<bits/stdc++.h>
-#define left sussy
-#define right baka
 #define int long long
 using namespace std;
 
-const int MAXN=1e5;
-int n,Q,a[MAXN+5];
-int left[MAXN+5],right[MAXN+5];
-vector<int>queries,sorted_a;
-
-void compute(){
-    stack<int>sta;
-    for(int i=1;i<=n;++i){
-        while(!sta.empty()&&a[sta.top()]<=a[i])sta.pop();
-        if(sta.empty()){
-            left[i]=0;
+struct DSU{
+    vector<int> parent, sz;
+    int n;
+    
+    DSU(int __n): n(__n) { parent.resize(n + 1, -1); sz.resize(n + 1, 0); }
+    
+    bool existed(int v){
+        return parent[v] != -1;
+    }
+    
+    void create(int v){
+        parent[v] = v;
+        sz[v] = 1;
+    }
+    
+    void initialize(){
+        for(int i = 0; i <= n; ++i){
+            create(i);
         }
-        else left[i]=sta.top();
-
-        sta.push(i);
     }
-
-    while(!sta.empty())sta.pop();
-
-    for(int i=n;i>=1;--i){
-        while(!sta.empty()&&a[sta.top()]<=a[i])sta.pop();
-        if(sta.empty()){
-            right[i]=n+1;
+    
+    int id(int v){
+        return parent[v] == v ? v : parent[v] = id(parent[v]);
+    }
+    
+    bool inGroup(int a, int b){
+        return id(a) == id(b);
+    }
+    
+    void unite(int a, int b){
+        a = id(a);
+        b = id(b);
+        
+        if(a != b){
+            if(sz[a] < sz[b]) swap(a, b);
+            
+            parent[b] = a;
+            sz[a] += sz[b];
         }
-        else right[i]=sta.top();
-
-        sta.push(i);
     }
-}
+};
 
-void presolve(){
-    vector<pair<int,int>>pairs;
-    for(int i=1;i<=n;++i){
-        pairs.push_back({a[i],right[i]-left[i]-1});
-    }
-    sort(pairs.begin(),pairs.end());
+const int MAXN = 1e5;
+pair<int, int> arr[MAXN + 5];
+int maxGroup[MAXN + 5];
+int n, q;
 
-    int cur_max=-1e18;
-    for(auto p:pairs){
-        cur_max=max(cur_max,p.second);
-        sorted_a.push_back(p.first);
-        queries.push_back(cur_max);
+int upperbound(int value){
+    int l = 1, r = n, res = n + 1;
+    while(l <= r){
+        int mid = (l + r) >> 1;
+        if(arr[mid].first > value){
+            res = mid;
+            r = mid - 1;
+        }
+        else l = mid + 1;
     }
-}
-
-void solve(int value){
-    auto pos=upper_bound(sorted_a.begin(),sorted_a.end(),value);
-    if(pos==sorted_a.begin()){
-        cout<<"0\n";
-        return;
-    }
-    int idx=pos-sorted_a.begin()-1;
-    cout<<queries[idx]<<'\n';
+    
+    return res;
 }
 
 signed main(){
-    ios_base::sync_with_stdio(0);cin.tie(0);
-    cin>>n>>Q;
-    for(int i=1;i<=n;++i){
-        cin>>a[i];
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> n >> q;
+    for(int i = 1; i <= n; ++i){
+        cin >> arr[i].first;
+        arr[i].second = i;
     }
-
-    compute();
-    presolve();
-
-    while(Q--){
-        int k;
-        cin>>k;
-
-        solve(k);
+    sort(arr + 1, arr + n + 1);
+    
+    DSU dsu(n + 1);
+    for(int i = 1; i <= n; ++i){
+        int idx = arr[i].second;
+        dsu.create(idx);
+        
+        if(dsu.existed(idx - 1)) dsu.unite(idx - 1, idx);
+        if(dsu.existed(idx + 1)) dsu.unite(idx + 1, idx);
+        maxGroup[i] = max(maxGroup[i - 1], dsu.sz[dsu.id(arr[i].second)]);
     }
+    
+    for(int i = 1; i <= q; ++i){
+        int k; cin >> k;
+        
+        int sep = upperbound(k) - 1;
+        cout << maxGroup[sep] << '\n';
+    }
+    
     return 0;
 }

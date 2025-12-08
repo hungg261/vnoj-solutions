@@ -1,96 +1,124 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// #define int long long
+#define int long long
+struct MaxFlow{
+    static const int INF = LLONG_MAX;
+    struct EdgeTo{
+        int v;
+        int cap;
+        int rev;
 
-struct EdgeTo{
-    int v, w, rev;
+        EdgeTo() = default;
+        EdgeTo(int _v, int _w, int _rev): v(_v), cap(_w), rev(_rev){}
+    };
 
-    EdgeTo() = default;
-    EdgeTo(int _v, int _w, int _rev): v(_v), w(_w), rev(_rev){}
+    int n, m;
+    vector<vector<EdgeTo>> adj;
+    vector<int> level, it;
 
-    void assignTo(int& _v, int& _w) const{ _v = v; _w = w; }
+    MaxFlow() = default;
+    MaxFlow(int V): n(V){
+        adj.resize(V + 1);
+        level.resize(V + 1);
+        it.resize(V + 1);
+    }
 
-    bool operator == (const EdgeTo& other){
-        return this->v == other.v;
+    void addEdge(int a, int b, int c, bool directed = true){
+        adj[a].emplace_back(b, c, (int)adj[b].size());
+        adj[b].emplace_back(a, directed ? 0 : c, (int)adj[a].size() - 1);
+    }
+
+    bool bfs_findPath(int S, int T){
+        queue<int> que;
+        que.push(S);
+
+        fill(begin(level) + 1, end(level), -1);
+        level[S] = 0;
+        while(!que.empty()){
+            int u = que.front(); que.pop();
+            for(const EdgeTo& e: adj[u]){
+                if(e.cap > 0 && level[e.v] == -1){
+                    level[e.v] = level[u] + 1;
+                    que.push(e.v);
+                }
+            }
+        }
+
+        return level[T] >= 0;
+    }
+
+    int dfs_sendFlow(int u, int flow, int T){
+        if(u == T || flow == 0) return flow;
+
+        for(int& i = it[u]; i < (int)adj[u].size(); ++i){
+            EdgeTo& e = adj[u][i];
+
+            if(e.cap > 0 && level[u] + 1 == level[e.v]){
+                int pushed = dfs_sendFlow(e.v, min(flow, e.cap), T);
+                if(pushed > 0){
+                    e.cap -= pushed;
+                    adj[e.v][e.rev].cap += pushed;
+                    return pushed;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    vector<pair<int, int>> minCut(int S, int T, const vector<pair<int, int>>& edges){
+        vector<bool> reachable(n + 1);
+
+        queue<int> que;
+        que.push(S);
+        reachable[S] = true;
+
+        while(!que.empty()){
+            int u = que.front(); que.pop();
+            for(const EdgeTo& e: adj[u]){
+                if(e.cap > 0 && !reachable[e.v]){
+                    reachable[e.v] = true;
+                    que.push(e.v);
+                }
+            }
+        }
+
+        vector<pair<int, int>> res;
+        for(const pair<int, int>& p: edges){
+            if(reachable[p.first] ^ reachable[p.second]){
+                res.push_back(p);
+            }
+        }
+        return res;
+    }
+
+    int getFlow(int S, int T){
+        int ans = 0;
+        while(bfs_findPath(S, T)){
+            fill(begin(it) + 1, end(it), 0);
+            ans += dfs_sendFlow(S, INF, T);
+        }
+
+        return ans;
     }
 };
 
-const int MAXN = 1000, MAXM = 1000;
-
-int n, m;
-vector<EdgeTo> adj[MAXN + 5];
-int level[MAXN + 5], it[MAXN + 5];
-
-void addEdge(int u, int v, int w){
-    adj[u].push_back({v, w, (int)adj[v].size()});
-    adj[v].push_back({u, 0, (int)adj[u].size() - 1});
-}
-
-bool bfs(int S, int T){
-    fill(level + 1, level + n + 1, -1);
-    queue<int> que;
-    que.push(S);
-    level[S] = 0;
-
-    while(!que.empty()){
-        int u = que.front(); que.pop();
-        for(const EdgeTo& e: adj[u]){
-            if(e.w > 0 && level[e.v] < 0){
-                level[e.v] = level[u] + 1;
-                que.push(e.v);
-            }
-        }
-    }
-
-    return level[T] >= 0;
-}
-
-int dfs(int u, int flow, int T){
-    if(u == T){
-        return flow;
-    }
-
-    for(int &i = it[u]; i < (int)adj[u].size(); ++i){
-        EdgeTo& e = adj[u][i];
-        if(e.w > 0 && level[u] + 1 == level[e.v]){
-            int pushed = dfs(e.v, min(flow, e.w), T);
-            if(pushed > 0){
-                e.w -= pushed;
-                adj[e.v][e.rev].w += pushed;
-                return pushed;
-            }
-        }
-    }
-
-    return 0;
-}
-
-void solve(int S, int T){
-    long long ans = 0;
-    while(bfs(S, T)){
-        fill(it + 1, it + n + 1, 0);
-        while(int pushed = dfs(S, INT_MAX, T)){
-            ans += pushed;
-        }
-    }
-
-    cout << ans << '\n';
-}
-
 signed main(){
     ios_base::sync_with_stdio(0); cin.tie(0);
-    int S, T;
+
+    int n, m, S, T;
     cin >> n >> m >> S >> T;
 
+    MaxFlow G(n);
     for(int i = 1; i <= m; ++i){
         int a, b, c;
         cin >> a >> b >> c;
 
-        addEdge(a, b, c);
+        G.addEdge(a, b, c);
     }
 
-    solve(S, T);
+    cout << G.getFlow(S, T) << '\n';
 
     return 0;
 }

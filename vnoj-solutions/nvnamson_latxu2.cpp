@@ -1,41 +1,92 @@
-// ko phai code cua minh :)
-// src: https://ptnkoj.com/src/138528
-
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
+#pragma GCC optimize("Ofast,unroll-loops")
+#pragma GCC target("avx2")
 using namespace std;
-#define FOR(i, n) for(int i = 0; i < (n); i++)
-#define bit(i, j) (1<<((i)*4+(j)))
-const int MAX = 65535, INF = 99999;
-int dp[MAX + 1], m, t, n;
-queue<pair<int, int>> Q;
 
-int main() {
-    cin.tie(0), cout.tie(0) -> sync_with_stdio(0);
-    fill(dp, dp+MAX+1, INF);
+const int MAX=1<<16;
+unordered_map<int,int>res;
 
-    Q.emplace(0, 0);
-    Q.emplace(MAX, 0);
-    while(!Q.empty()) {
-        tie(m, t) = Q.front(); Q.pop();
-        if(dp[m] != INF) continue;
-        dp[m] = t++;
-        FOR(i, 4) FOR(j, 4) {
-            int m2 = m ^ bit(i, j);
-            if(j != 0) m2 ^= bit(i, j-1);
-            if(j != 3) m2 ^= bit(i, j+1);
-            if(i != 0) m2 ^= bit(i-1, j);
-            if(i != 3) m2 ^= bit(i+1, j);
-            if(dp[m2] == INF) Q.emplace(m2, t);
+const int dx[5]={0,-1,0,1,0},dy[5]={0,0,1,0,-1};
+struct state{
+    int id,mov;
+    
+    bool is_inside(int x,int y){
+        return x>=0&&y>=0&&x<4&&y<4;
+    }
+    
+    void flip(int x,int y){
+        id^=(1<<(x*4+y));
+    }
+    
+    void operate(int x,int y){
+        for(int d=0;d<5;++d){
+            int nx=x+dx[d],ny=y+dy[d];
+            if(is_inside(nx,ny)){
+                flip(nx,ny);
+            }
         }
     }
+};
 
-    cin >> n;
-    while(n--) {
-        int m = 0; 
-        FOR(i, 16) {
-            char c; cin >> c;
-            m = m*2 + (c == 'T');
+void compute(){
+    queue<state>que;
+    que.push({0,0});
+
+    while(!que.empty()){
+        state cur=que.front();
+        que.pop();
+        
+        if(res.count(cur.id)){
+            continue;
         }
-        ((m = dp[m]) == INF)? (cout << "Impossible\n"): (cout << m << '\n');
-    }       
+        res[cur.id]=cur.mov;
+
+        for(int i=0;i<4;++i){
+            for(int j=0;j<4;++j){
+                cur.operate(i,j);
+                ++cur.mov;
+                
+                que.push(cur);
+                
+                cur.operate(i,j);
+                --cur.mov;
+            }
+        }
+    }
+}
+
+int solve(int id){
+    int ans=1e9;
+    if(res.count(id))ans=min(ans,res[id]);
+    if(res.count(MAX-id-1))ans=min(ans,res[MAX-id-1]);
+    return ans;
+}
+
+void input(){
+    int t;
+    cin>>t;
+    
+    int a,res;
+    string line;
+    while(t--){
+        a=0;
+        for(int i=0;i<4;++i){
+            cin>>line;
+            
+            for(int j=0;j<4;++j){
+                if(line[j]=='H')a|=(1<<(i*4+j));
+            }
+        }
+        res=solve(a);
+        if(res==1e9)cout<<"Impossible\n";
+        else cout<<res<<'\n';
+    }
+}
+
+signed main(){
+    ios_base::sync_with_stdio(0);cin.tie(0);
+    compute();
+    input();
+    
+    return 0;
 }

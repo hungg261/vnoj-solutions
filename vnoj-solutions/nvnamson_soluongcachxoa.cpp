@@ -1,5 +1,4 @@
 #include<bits/stdc++.h>
-#define int long long
 using namespace std;
 
 const int MAXN=1e5;
@@ -13,7 +12,7 @@ signed main(){
     
     target=(accumulate(begin(s),end(s),0)-'0'*n)%3;
     ++freq[target];
-    int ans=target==0;
+    long long ans=target==0;
     for(int i=0;i<n;++i){
         int digit=s[i]-'0';
         

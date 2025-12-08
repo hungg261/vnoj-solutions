@@ -30,7 +30,6 @@ void solve(){
 }
 
 signed main(){
-    ios_base::sync_with_stdio(0);cin.tie(0);
     cin>>n>>s;
     n=s.size();
     for(int i=0;i<n;++i){
@@ -45,29 +44,6 @@ signed main(){
         }
         ++prefix[s[i]][i+1];
     }
-    
-    // for(int c='A';c<='Z';++c){
-    //     cerr<<(char)c<<": ";
-    //     for(int i=0;i<=n;++i){
-    //         cerr<<prefix[c][i]<<' ';
-    //     }
-    //     cerr<<'\n';
-    // }
-    // for(int c='a';c<='z';++c){
-    //     cerr<<(char)c<<": ";
-    //     for(int i=0;i<=n;++i){
-    //         cerr<<prefix[c][i]<<' ';
-    //     }
-    //     cerr<<'\n';
-    // }
-    // cerr<<app<<'\n';
-    // for(char c:app){
-    //     cerr<<(char)c<<": ";
-    //     for(int i=0;i<=n;++i){
-    //         cerr<<prefix[c][i]<<' ';
-    //     }
-    //     cerr<<'\n';
-    // }
     
     solve();
     return 0;

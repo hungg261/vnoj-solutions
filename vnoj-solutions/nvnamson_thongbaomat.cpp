@@ -1,4 +1,5 @@
 #include<bits/stdc++.h>
+#define hash sussy
 #define int long long
 using namespace std;
 
@@ -29,41 +30,61 @@ string decode(string s){
 }
 
 // KMP
-vector<int>LPS(string A){
-    int m=A.length();
-    vector<int> lps(m,0);
-    int j=0;
-
-    for(int i=1;i<m;++i){
-        while(j>0&&A[i]!=A[j])j=lps[j-1];
-        if(A[i]==A[j])++j;
+// void solve(string A,string B){
+//     string s=A+'#'+B;
+//     int n=s.size();
+    
+//     vector<int>pi(n);
+//     pi[0]=0;
+    
+//     int ans=0;
+//     for(int i=1;i<n;++i){
+//         int j=pi[i-1];
+//         while(j>0&&s[j]!=s[i]){
+//             j=pi[j-1];
+//         }
+//         if(s[j]==s[i]){
+//             ++j;
+//         }
         
-        lps[i]=j;
-    }
+//         if(j==(int)A.size()){
+//             ++ans;
+//         }
+//         pi[i]=j;
+//     }
+    
+//     cout<<ans<<'\n';
+// }
 
-    return lps;
+int getHash(int i,int j,const vector<int>&hash,const vector<int>&powhash,const int&MOD){
+    return ((hash[j]-hash[i-1]*powhash[j-i+1])%MOD+MOD)%MOD;
 }
 
-void solve(string A,string B){
-    vector<int> lps=LPS(A);
-    int n=B.length(),m=A.length();
-    int i=0,j=0,ans=0;
-
-    while(i<n){
-        if(A[j]==B[i]){
-            ++i;
-            ++j;
-        }
-        if(j==m){
-            ++ans;
-            j=lps[j-1];
-        }
-        else if(i<n&&A[j]!=B[i]){
-            if(j!=0) j=lps[j-1];
-            else ++i;
-        }
+void solve(string B,string A){
+    int n=A.size(),m=B.size();
+    
+    A='#'+A;
+    B='#'+B;
+    const int BASE=11,MOD=1e9+9;
+    vector<int>hash(n+1),powhash(n+1);
+    
+    powhash[0]=1;
+    for(int i=1;i<=n;++i){
+        powhash[i]=(powhash[i-1]*BASE)%MOD;
+        hash[i]=(hash[i-1]*BASE+(A[i]-'0'+1))%MOD;
     }
     
+    int target_hash=0;
+    for(int i=1;i<=m;++i){
+        target_hash=(target_hash*BASE+(B[i]-'0'+1))%MOD;
+    }
+    
+    int ans=0;
+    for(int i=m;i<=n;++i){
+        if(getHash(i-m+1,i,hash,powhash,MOD)==target_hash){
+            ++ans;
+        }
+    }
     cout<<ans<<'\n';
 }
 

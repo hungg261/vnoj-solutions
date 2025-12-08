@@ -7,14 +7,17 @@ int n,a[MAXN+1],dp[MAXN+1][MAXN+1];
 
 void solve(){
     for(int i=1;i<=n;++i){
-        dp[i][i]=a[i];
+        dp[i][i]=n%2==0?-a[i]:a[i];
     }
 
     for(int len=2;len<=n;++len){
         for(int i=1;i<=n-len+1;++i){
             int j=i+len-1;
-
-            dp[i][j]=max(a[i]-dp[i+1][j],a[j]-dp[i][j-1]);
+            
+            if((n-len+1)%2==0)
+                dp[i][j]=min(dp[i+1][j]-a[i],dp[i][j-1]-a[j]);
+            else
+                dp[i][j]=max(dp[i+1][j]+a[i],dp[i][j-1]+a[j]);
         }
     }
 

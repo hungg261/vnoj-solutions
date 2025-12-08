@@ -2,12 +2,13 @@
 using namespace std;
 
 const int MAXN=5e4,MAXVAL=1e6,OFFSET=1e6;
-int n,k,a[MAXN+1],mark[2*MAXVAL+69];
+int n,k,a[MAXN+1];
 
 void solve(){
-    long long ans=0;
+    int ans=0;
+    unordered_map<int,int>mark;
     for(int i=1;i<=n;++i){
-        for(int j=a[i]+1;j<=min(MAXVAL,a[i]+k);++j){
+        for(int j=a[i]+1;j<=a[i]+k;++j){
             ans+=mark[j+OFFSET];
         }
         ++mark[a[i]+OFFSET];

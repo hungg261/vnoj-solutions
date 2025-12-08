@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-const int MAX = 32000;
+const int MAX = 38000;
 int res[MAX + 5];
 
 int chinh_phuong(int num){

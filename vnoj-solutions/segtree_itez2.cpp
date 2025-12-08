@@ -2,103 +2,80 @@
 #define int long long
 using namespace std;
 
-struct segment_tree{
-    int n;
-    vector<int>nodes;
-    
-    void setLength(int newsize){
-        n=newsize;
-        nodes.resize(n*4);
-    }
-    
-    void build(int id,int L,int R,vector<int>&arr){
-        if(L==R){
-            nodes[id]=arr[L];
-            return;
-        }
-        
-        int mid=(L+R)/2;
-        build(2*id,L,mid,arr);
-        build(2*id+1,mid+1,R,arr);
-        
-        nodes[id]=nodes[2*id]+nodes[2*id+1];
-    }
-    
-    void update(int id,int L,int R,int pos,int x){
-        if(pos<L||R<pos){
-            return;
-        }
-        if(L==R){
-            nodes[id]=x;
-            return;
-        }
-        
-        int mid=(L+R)/2;
-        update(2*id,L,mid,pos,x);
-        update(2*id+1,mid+1,R,pos,x);
-        
-        nodes[id]=nodes[2*id]+nodes[2*id+1];
-    }
-    
-    int get(int id,int L,int R,int u,int v){
-        if(v<L||R<u){
-            return 0;
-        }
-        
-        if(u<=L&&R<=v){
-            return nodes[id];
-        }
-        
-        int mid=(L+R)/2;
-        int get1=get(2*id,L,mid,u,v),
-            get2=get(2*id+1,mid+1,R,u,v);
-        
-        return get1+get2;
-    }
-    
-    void build(vector<int>&arr){
-        build(1,1,n,arr);
-    }
-    
-    void update(int pos,int x){
-        update(1,1,n,pos,x);
-    }
-    
-    int get(int u,int v){
-        return get(1,1,n,u,v);
-    }
-};
+const int MAXN=1e5;
+int n,a[MAXN+5],nodes[MAXN*4+5];
 
-void query(segment_tree&segg){
-    int type;
-    cin>>type;
+void build(int id,int l,int r){
+    if(l==r){
+        nodes[id]=a[l];
+        return;
+    }
     
-    if(type==1){
-        int k,u;
-        cin>>k>>u;
-        
-        segg.update(k,u);
+    int mid=(l+r)/2;
+    build(id*2,l,mid);
+    build(id*2+1,mid+1,r);
+    nodes[id]=nodes[id*2]+nodes[id*2+1];
+}
+
+void update(int id,int l,int r,int x,int y){
+    if(r<x||x<l){
+        return;
     }
-    else{
-        int a,b;
-        cin>>a>>b;
-        
-        cout<<segg.get(a,b)<<'\n';
+    
+    if(l==r){
+        nodes[id]=y;
+        return;
     }
+    
+    int mid=(l+r)/2;
+    update(id*2,l,mid,x,y);
+    update(id*2+1,mid+1,r,x,y);
+    nodes[id]=nodes[id*2]+nodes[id*2+1];
+}
+
+int get(int id,int l,int r,int u,int v){
+    if(r<u||v<l){
+        return 0;
+    }
+    
+    if(u<=l&&r<=v){
+        return nodes[id];
+    }
+    
+    int mid=(l+r)/2;
+    int range1=get(id*2,l,mid,u,v),
+        range2=get(id*2+1,mid+1,r,u,v);
+    return range1+range2;
 }
 
 signed main(){
     ios_base::sync_with_stdio(0);cin.tie(0);
-    int n,t;
-    cin>>n>>t;
-    vector<int>arr(n+1,0);
-    
-    segment_tree segg;
-    segg.setLength(n);
-    segg.build(arr);
-    
-    while(t--){
-        query(segg);
+    cin>>n;
+    for(int i=1;i<=n;++i){
+        // cin>>a[i];
+        a[i]=0;
     }
+    build(1,1,n);
+    
+    int q;
+    cin>>q;
+    while(q--){
+        int type;
+        cin>>type;
+        
+        if(type==1){
+            int x,y;
+            cin>>x>>y;
+            
+            update(1,1,n,x,y);
+        }
+        else{
+            int l,r;
+            cin>>l>>r;
+            
+            cout<<get(1,1,n,l,r)<<'\n';
+        }
+    }
+    
     return 0;
 }

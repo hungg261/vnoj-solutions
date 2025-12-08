@@ -1,38 +1,25 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-string n;
-int k;
-
-void solve(){
-    stack<int>sta;
+void operate(string&n){
     int m=n.size();
-    for(int i=0;i<m;++i){
-        while(!sta.empty()&&n[sta.top()]<n[i]){
-            n[sta.top()]='#';
-            sta.pop();
-            --k;
-            
-            if(k==0){
-                goto passed;
-            }
-        }
-        sta.push(i);
-    }
-    passed:0;
-    string res;
-    for(int i=0;i<m;++i){
-        if(n[i]!='#'){
-            res+=n[i];
+    for(int i=0;i+1<m;++i){
+        if(n[i]<n[i+1]){
+            n.erase(begin(n)+i);
+            return;
         }
     }
-    cout<<res.substr(0,(int)res.size()-k)<<'\n';
+    n.pop_back();
 }
 
 signed main(){
-    ios_base::sync_with_stdio(0);cin.tie(0);
+    string n;
+    int k;
     cin>>n>>k;
     
-    solve();
+    while(k--){
+        operate(n);
+    }
+    cout<<n<<'\n';
     return 0;
 }

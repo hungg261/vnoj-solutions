@@ -21,9 +21,9 @@ int get_closet(int target,int x){
 signed main(){
     ios_base::sync_with_stdio(0);cin.tie(0);
     cin>>n>>k;
-    int ans=0;
-    for(int x=1;x<=60;++x){
-        int row=get_row(k,x);
+    int ans=0,row;
+    for(int x=1;x<=7;++x){
+        row=get_row(k,x);
         if(row==-1){
             ans+=get_closet(n,x)+1;
         }
@@ -32,8 +32,7 @@ signed main(){
             break;
         }
     }
-    cout<<ans<<'\n';
-    return 0;
     
+    cout<<ans<<'\n';
     return 0;
 }

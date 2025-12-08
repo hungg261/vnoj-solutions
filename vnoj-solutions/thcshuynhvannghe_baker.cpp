@@ -9,15 +9,14 @@ signed main(){
     int n;
     cin >> n;
 
+	// #define double long double
     vector<int> a(n), b(n);
     for(int& ele: a) cin >> ele;
     for(int& ele: b) cin >> ele;
-
+	
     int best = 0;
     for(int i = 1; i < n; ++i){
-        if((__int128)a[i] * b[best] > (__int128)b[i] * a[best]){
-            best = i;
-        }
+        if((__float128)a[i] / b[i] > (__float128)a[best] / b[best]) best = i;
     }
 
     cout << best + 1 << '\n';

@@ -12,7 +12,7 @@ void solve(){
         if(a[i]>dp[len-1]){
             dp[len++]=a[i];
         }
-        else dp[lower_bound(dp,dp+len,a[i])-dp]=a[i];
+        else *lower_bound(dp,dp+len,a[i])=a[i];
     }
     
     int cnt=len;

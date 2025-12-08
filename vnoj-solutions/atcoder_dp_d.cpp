@@ -1,30 +1,30 @@
 #include<bits/stdc++.h>
-#define int long long
 using namespace std;
 
 const int MAXN=100,MAXW=1e5;
-int w[MAXN+1],v[MAXN+1],dp[MAXN+1][MAXW+1],N,W;
+long long dp[2][MAXW+1];
+int N,W;
 
 void solve(){
+    int wi,vi;
     for(int i=1;i<=N;++i){
+        cin>>wi>>vi;
+        
         for(int j=0;j<=W;++j){
-            dp[i][j]=dp[i-1][j];
-            if(j>=w[i]){
-                dp[i][j]=max(dp[i][j],dp[i-1][j-w[i]]+v[i]);
+            dp[1][j]=dp[0][j];
+            if(j>=wi){
+                dp[1][j]=max(dp[1][j],dp[0][j-wi]+vi);
             }
         }
+        memcpy(dp[0],dp[1],sizeof dp[0]);
     }
     
-    cout<<dp[N][W]<<'\n';
+    cout<<dp[1][W]<<'\n';
 }
 
 signed main(){
     ios_base::sync_with_stdio(0);cin.tie(0);
     cin>>N>>W;
-    for(int i=1;i<=N;++i){
-        cin>>w[i]>>v[i];
-    }
-    
     solve();
     return 0;
 }

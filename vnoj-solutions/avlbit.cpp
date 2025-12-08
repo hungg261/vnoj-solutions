@@ -49,7 +49,7 @@ int markquery(int l,int r){
     int bit=__lg(r-l+1),
         length=1<<bit;
         
-    return __gcd(table[bit][l][3],table[bit][r-length+1][3]);
+    return max(table[bit][l][3],table[bit][r-length+1][3]);
 }
 
 void solve(){
